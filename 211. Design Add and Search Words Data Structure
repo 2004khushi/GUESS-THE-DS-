@@ -1,0 +1,92 @@
+class WordDictionary {
+public:
+    vector<int>result; //output vector
+    int m, n; //rows n cols
+
+    struct trieNode {
+        //3 things we need, is it the end letter of a word? each node(including root) has an array of 26 pointers(a-z) pointing to other trienodes
+
+        bool endOfWord; 
+        trieNode* children[26];
+    };
+
+
+    trieNode* getNode(){
+        //responsible for creating and initializing new nodes for your Trie.
+
+        trieNode* newNode = new trieNode();
+        newNode->endOfWord = false; //initially to obv false hi hoga 
+        
+        for(int i=0; i<26; i++){
+            newNode->children[i] = NULL; //initially all pointer be null
+        }
+
+        return newNode;
+    }
+
+    trieNode* root;
+
+    WordDictionary() {
+        root = getNode(); //created a node which is having 26 array of pointers which are null and endofword is false.
+    }
+
+    
+    void addWord(string word) {
+        trieNode* crawler = root;
+        
+        for(int i=0; i<word.length(); i++){
+
+            //pehle crawler is pointing to root
+            char ch = word[i];
+
+            if(crawler->children[ch- 'a'] == NULL){
+                //uske children me agar nhi h vo character ka node to banado ek node
+                crawler->children[ch- 'a'] = getNode();
+            }
+
+            //ab us node ko na crawler point krega taaki usko ab as root node treat krke uske vanshaj badhaaye vo!
+            crawler = crawler->children[ch-'a'];
+        }
+
+        crawler->endOfWord = true; //last character ka endofeord true krdo        
+    }
+
+
+    bool searchUtil(trieNode* root, string word){
+        trieNode* crawler = root;
+
+        for(int i=0; i<word.size(); i++){
+
+            char ch = word[i];
+
+            if(ch=='.'){
+
+                for(int j=0; j<26; j++){
+
+                    if(crawler->children[j] != NULL){
+
+                        //to vaapis andar jaao
+                        if(searchUtil(crawler->children[j], word.substr(i+1)) == true){
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
+            }else if (crawler->children[ch-'a'] == NULL){
+                return false;
+            }
+
+
+            crawler = crawler->children[ch-'a'];
+        }
+
+
+        return (crawler!=NULL && crawler->endOfWord == true);
+    }
+    
+    bool search(string word) {
+        return searchUtil(root, word);
+    }    
+};
+
