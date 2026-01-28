@@ -1,0 +1,98 @@
+class LFUCache {
+public:
+
+   int cap;
+   int size;
+
+   unordered_map<int, list< vector<int> > ::iterator> mp;
+//    If freq is an unordered_map, .begin() is random. It won't give you the lowest number.If freq is a std::map, .begin() is O(1) and gives the lowest frequency, but every insertion/deletion becomes O(log f).
+//    map<int,list<vector<int>>> freq;
+   unordered_map<int,list<vector<int>>> freq;
+
+   int minFreq = 1; //bcs we dont have any map so need to keep ordered map in unordered_map with min_freq!
+
+    LFUCache(int capacity) {
+        cap = capacity;
+        size = 0;
+    }
+    
+    int get(int key) {
+
+        if(mp.find(key) == mp.end()){
+            return -1;
+        }
+
+        //par agar key is presnt then i want the value of it r8?
+        //value is in freq and to get to freq we need to access mp but from mp we will be directly directed to the vector's address so from there the [1] element would be returned back and the [2] element we will take to reach to the key of freq map bcs now it's count need to be ++ so we will del that vector from that [2] freq key and add it to the new one by seeing what's the [2]'th +1 value and there we will push it in front bcs it's most recently used.
+
+        auto it = mp[key];
+        int val = (*it)[1];
+        int count = (*it)[2];
+
+        freq[count].erase(it);
+
+        //but it may happen that from where u deleting ab vo count ke andar tehre's no vector so it's empty so u need to delete it too taaki next time to get the smaller count uske baad wala jo tha vo access ho naki ye khali vector waala!
+        if(freq[count].empty()){
+            freq.erase(count);
+            if (count == minFreq) minFreq++; //it m8 happen that count =2 wale row ka sab khaali hogya but that's not minFreq r8 so u dont wnna blindfoldedly do minFreq++ at that time.
+        }
+
+        int nex_freq = count+1;
+        freq[nex_freq].push_front({key,val,nex_freq});
+
+        mp[key] = freq[nex_freq].begin();
+
+        return val;
+    }
+    
+    void put(int key, int value) {
+        
+        if(cap == 0) return;
+
+        if(mp.find(key) != mp.end()){
+            //to value update krni pdegi, hence u need to del it from rn's count place and add it to the new one
+            auto it = mp[key];
+            int count = (*it)[2];
+            freq[count].erase(it);
+
+            //update to kr diya but ab ye recently used bhi hogyi so 
+            if(freq[count].empty()){
+                freq.erase(count);
+
+                // If this was the minFreq, we increment it
+                if (count == minFreq) minFreq++;
+            }
+
+
+            int new_count = count+1;
+            freq[new_count].push_front({key,value,new_count});
+            mp[key] = freq[new_count].begin();
+
+        }else {
+            if (size == cap){
+                //bcs u cant overflow the cache capacity so u need to evict the last node of minfreq row! and as well as del it form mp too bcs now it will get the new address to point out!
+
+                int key_to_evict = freq[minFreq].back()[0];
+
+                freq[minFreq].pop_back();
+                mp.erase(key_to_evict);
+
+                //if vo minFreq me taht was teh last element so need to remove that too and update minFreq value
+                if(freq[minFreq].empty()){
+                    freq.erase(minFreq);
+                    //minFreq++; dont do this bcs u have to insert new one so eventually minFreq again will be 1 only!
+                }
+
+            }else if(size < cap){
+                size++;
+            }
+                
+            //to insert now u cant first indert in mp bcs u need the address so 1st insert in freq at front in dll.
+                // New elements always start with frequency 1
+                minFreq = 1;
+                freq[1].push_front( {key ,value ,1 } );
+                mp[key] = freq[1].begin();
+        }
+    }
+};
+
