@@ -1,0 +1,49 @@
+class MyHashSet {
+public:
+    int M; // number of buckets/servers in hash
+    vector<list<int>> vec;
+
+    int getIndex(int key) { return key % M; }
+
+    MyHashSet() {
+        M = 15000; // At most 104 calls will be made is said so for safety
+                   // taking 15k
+        vec = vector<list<int>>(M, list<int>{}); // initialise
+    }
+
+    void add(int key) {
+        // pehle search kro , index se vo list ka index miljaayega ab us list me
+        // search krna h
+        int index = getIndex(key);
+
+        auto itr = find(vec[index].begin(), vec[index].end(), key);
+        if (itr == vec[index].end()) {
+            vec[index].push_back(key);
+        }
+    }
+
+    void remove(int key) {
+        int index = getIndex(key);
+
+        auto itr = find(vec[index].begin(), vec[index].end(), key);
+        if (itr != vec[index].end()) {
+            vec[index].erase(itr);
+        }
+    }
+
+    bool contains(int key) {
+        int index = getIndex(key);
+
+        auto itr = find(vec[index].begin(), vec[index].end(), key);
+
+        return (itr != vec[index].end());
+    }
+};
+
+/**
+ * Your MyHashSet object will be instantiated and called as such:
+ * MyHashSet* obj = new MyHashSet();
+ * obj->add(key);
+ * obj->remove(key);
+ * bool param_3 = obj->contains(key);
+ */
