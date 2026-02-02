@@ -1,0 +1,57 @@
+class MyHashMap {
+public:
+
+    vector<list<pair<int,int>>> buckets;
+    int size = 10000;
+    MyHashMap() {
+        buckets.resize(size);
+    }
+    
+    void put(int key, int value) {
+        //pehle bucket numebr nikaal lete h jisme hash fn of that key ko daalna h!
+        int bucket_no = key%size;
+
+        auto &chain = buckets[bucket_no];
+        //ab isme daaldete h hum humara value and key daal dete hai
+
+        for(auto &it: chain){
+            if (it.first == key){
+                it.second = value;
+                return;
+            }
+        }
+
+        //or else add it 
+        chain.emplace_back(key, value);
+
+    }
+    
+    int get(int key) {
+
+        int bucket_no = key%size;
+        auto &chain = buckets[bucket_no];
+        
+        for(auto &it: chain){
+            if(it.first == key){
+                return it.second;
+            }
+        }
+
+        return -1;
+    }
+    
+    void remove(int key) {
+        int bucket_no = key%size;
+        auto &chain = buckets[bucket_no];
+
+        // for(auto &it: chain)  -> not this bcs &it here is {a,b} and to erase u need a pointer
+        for(auto it=chain.begin(); it!=chain.end(); it++) { 
+
+            if(it->first == key){
+                chain.erase(it);
+                return;
+            }
+        }
+    }
+};
+
