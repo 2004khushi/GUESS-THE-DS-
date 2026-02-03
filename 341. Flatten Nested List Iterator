@@ -1,0 +1,148 @@
+APPROACH 1 ->
+
+kyuki hasNext me apan ko make sure krna hi h ki top element shud be integer only
+to what m doing is-> I will just open up the nestedlist if top me wo tha
+ab what if nestedlist jo tha usme bhi nested h to jab tune use khola to firbhi int nhi aaya list aayi!
+so hume ye loop me krke krna pdega ki jabtak top int nhi ajata kholte rho top wale element ko and jese hi aajaye treturn krdo and agar stack hi empty h to false return krdo. and also onnce u open up na that top element which was nestedlist make sure u pop it out too vrna copies save hojayengi faaltu ki!
+
+now one thing more ki jab tu use kholri h top wale nested ko to make sure u push it back in that stack only reverse order me bcs lifo uk!
+baaki next() -> ez just return the top one and pop it out!
+ ->
+    stack<NestedInteger> st;
+    NestedIterator(vector<NestedInteger> &nestedList) {
+        int size = nestedList.size();
+
+        //ulta daalna h as lifo
+        for(int i=size-1; i>=0; i--){
+            st.push(nestedList[i]);
+        }
+    }
+    
+    int next() {
+        int num = st.top().getInteger();
+        st.pop();
+        return num;
+    }
+    
+    bool hasNext() {
+
+        if(st.empty()){
+            return false;
+        }
+        
+        while(!st.empty()){
+
+            NestedInteger curr = st.top();
+
+            //check top wala
+            if(curr.isInteger()){
+                return true;
+            }
+
+            st.pop(); //nikalana mat bhulna fir kholke daalna h
+
+            //agar nhi h to use kholo
+            vector<NestedInteger> vec = curr.getList();
+
+            for(int i=vec.size()-1; i>=0; i--){
+                st.push(vec[i]);
+            }
+        }
+        return false;
+    }
+};
+
+
+
+
+APPROACH 2 ->
+	saaara code same bas address save krre instead of the obj copying thing bcs bro obj can have tons of things ->
+stack<NestedInteger*> st;
+    NestedIterator(vector<NestedInteger> &nestedList) {
+        int size = nestedList.size();
+
+        //ulta daalna h as lifo
+        for(int i=size-1; i>=0; i--){
+            st.push(&nestedList[i]); //& bcs address store krre rather then copying the whole object bcs object can have a lot of things bro!
+        }
+    }
+    
+    int next() {
+        int num = st.top()->getInteger();
+        st.pop();
+        return num;
+    }
+    
+    bool hasNext() {
+
+        if(st.empty()){
+            return false;
+        }
+        
+        while(!st.empty()){
+
+            NestedInteger* curr = st.top();
+
+            //check top wala
+            if(curr->isInteger()){
+                return true;
+            }
+
+            st.pop(); //nikalana mat bhulna fir kholke daalna h
+
+            //agar nhi h to use kholo
+            vector<NestedInteger>& vec = curr->getList(); //& vec bcs upar u will see actually getList is in form of const
+
+            for(int i=vec.size()-1; i>=0; i--){
+                st.push(&vec[i]);
+            }
+        }
+        return false;
+    }
+
+
+
+
+
+APPROACH3 -> 
+bhai pehli hi kholke daaldo na baadme kyu kholna h -_-
+to fir hasnext and next sab O(1) me hi hojaega sara kaam, faaltu ki matha baaji kyu krni h be bhai!
+simply queue lo or usme recursn maardo!
+
+
+class NestedIterator {
+public:
+
+    queue<int> que;
+
+    void Flatten (vector<NestedInteger> &nestedList){
+        int size = nestedList.size();
+        
+        for(int i=0; i<size; i++){
+            
+            NestedInteger& obj = nestedList[i];
+            if(obj.isInteger()){
+                que.push(obj.getInteger());
+            }else{
+                Flatten(obj.getList());
+            }
+
+        }
+    }
+
+    NestedIterator(vector<NestedInteger> &nestedList) {
+        Flatten(nestedList);
+    }
+
+    
+    
+    int next() {
+        int num = que.front();
+        que.pop();
+        return num;
+    }
+    
+    bool hasNext() {
+        return !que.empty();
+    }
+};
