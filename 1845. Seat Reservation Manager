@@ -1,0 +1,55 @@
+class SeatManager {
+public:
+
+    priority_queue<int, vector<int>, greater<int>> pq;
+    int seat_maker ;
+    SeatManager(int n) {
+        seat_maker = 1;
+    }
+    
+    int reserve() {
+        
+        if(!pq.empty()){
+            int seat = pq.top();
+            pq.pop();
+            return seat;
+        }
+
+        int seat = seat_maker;
+        seat_maker++;
+        return seat;
+    }
+    
+    void unreserve(int seatNumber) {
+        pq.push(seatNumber);
+    }
+};
+
+
+
+
+very 1st approach array lelo us size ka jisme sab -1 krdo to show unreserved and jesehi reserve ho to use 1 krdo. ez! but reserve krne ke liye ho skta h O(n) lge right? and reserve wala m times kiya to -> O(m*n) hojayega to vo TLE dedega! so yaha ye case fail!
+
+next wht i can think of is list r8? but vo bhi O(N) hi hojayega in traversal!
+
+next map ka sochu agar if i try to make keys as seat then only same issue of O(n) bcs traverse to krna hi pdega key me bhi to get first -1! and if i make key as 1 and -1 and unke pairs as vectors then to unreserve merko O(N) lg skta in 1's vector value bcs i will need to find that element first!
+what if values are of list and not vector then removing a particular indexed wud be in O(1) right?
+see reserve fn -> from -1 key's value (list) we wil take .front() and .pop() from -1 and add in 1; ez! O(1)
+unreserve fn -> u'll get an index so to reach to that index's box of list in O(1) u need to save it's address in one DS right? so what we can do is we will also have an initial array who will store the addresses of their respective numbers taht's in list value.
+so for example if unreserve(int 6) came so go to arr[6] -> address of 6th list node; so now in map under 1's value list u go iorectly to that address and then u just remove it with O(1) and add it to -1 value section but then there also u will have complexity bcs we want the value list of atleast -1 in sorted form so maybe we can take sorted list? but then also O(n) hi rhega bcs sorted from me bhi usko add krne me shi jagah pe O(n) search time lg skta h!
+So isme max to max O(m * logn) tak complexity jaayegi apni IG! but it's quite complicated and jumbled to do! baaki. 
+
+so we need to mitigate this O(n) of adding of sorted thing and all so rather use min_heap a tree bcs parsing in tree is O(logn) rather then O(n) as evtg gets divided here in 2parts!
+so well since we need efficient timing for the smallest one for reserving maybe we can look for HEAP?
+so usme .pop() -> O(logn) only and baaki O(1). pop krenge jab reserve krdenge apan kuch! and unreserved me simply us ko vaapis daaldenge (int x) jo bhi milega vo x ko hi to daalna h and kyuki min heap lenge to vo apne aap adjusted form me hi hoga! koi jhnajhat nhi! -> O(logn)
+but isme jab apan sb daalenge heap me to -> O(n*logn) hojayega as push -> logn and n times krna hoga.
+
+
+so ab bas insertion in minheap reduce krne pe focus krte h->
+so let's just take a pointer  i mean a variable to keep a track on all the elements that we have okay
+so see -> eg x=1 (starting) then if i reserve -> y = x; x++ ; return y okay so faaida kya hua ki no insertion in heap needed! simple
+now for unreserving i will put that (int z) in teh heap ; let's say 5 elemnets i had to unreserve so sorted way they will go in that heap accordingly right! ok!  
+now let's say i have to reserve one seat joki just unreserve hui thi to what i will do is i will pop it out first then y = .top(); return y; 
+so make sure to add thsi edge case before the normal procedure and accordingly handle of making teh seat_maker!!
+
+
