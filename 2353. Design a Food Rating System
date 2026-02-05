@@ -1,0 +1,43 @@
+my intuitive h ki db me apan 3 maps banayaenge 1. <cuisnie, set<rating,food>>
+2. <cuisine,food> 3.<food,rating>
+
+and me set me ordered rkhri ascending me taaki last lement rbegin pointer se nikaal ke result me dedu as that wud be highest rating but ek dikkat h ki if <15,we>,<16,agjhb> ,<16,ftghj> are there so vo isi order me lgenge in set but question said ki agar esa hua to lexically jo small h vo return kro but if we do rbegin here it would give ftghj wala! so we will customise set!
+BUT ME TO SHAAAANIII HU BWHAHAHAHAHHAHA ->
+me rating ko - me krke save krdungi so -> <-16,agjhb> ,<-16,ftghj>,<-15,we> so we will return very first as answer only! 
+and uk what koi dikkat bhi nhi h, pata h kyu? bcs answer me kbhibhi rating submit nhi krna h apanko lol cusiine hi o/p dena hai!, aint i TOO SMART BWHAHAHAHHA
+
+
+class FoodRatings {
+public:
+
+    unordered_map<string,int> food_ratings;
+    unordered_map<string,set<pair<int,string>>> cuisine_ratings_food;
+    unordered_map<string,string> food_cuisine;
+
+
+    FoodRatings(vector<string>& foods, vector<string>& cuisines, vector<int>& ratings) {
+
+        int n = foods.size();
+        for(int i=0; i<n; i++){
+            food_ratings[foods[i]] = ratings[i];
+            food_cuisine[foods[i]] = cuisines[i];
+            cuisine_ratings_food[cuisines[i]].insert({-(ratings[i]),foods[i]});
+        }
+
+
+    }
+    
+    void changeRating(string food, int newRating) {
+        string cuisine = food_cuisine[food];
+        int old_rating = food_ratings[food];
+
+        food_ratings[food]=newRating;
+
+        cuisine_ratings_food[cuisine].erase({-old_rating,food});
+        cuisine_ratings_food[cuisine].insert({-newRating,food});
+    }
+    
+    string highestRated(string cuisine) {
+        return begin(cuisine_ratings_food[cuisine])->second;
+    }
+};
