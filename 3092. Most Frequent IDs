@@ -1,0 +1,48 @@
+see sbse pehle to obv si baat h ki map to aayega hi, bcs we need to have the track ki konse number ki kitni frequency hai . simple!
+
+secondly; bcs hume highest freq provide krni h so m thinking is ki keep a var and jese map me daalte jaaye apan vese usko update krde? but have a problem here as we need to - also the freq so let's say 2 ki freq was 5 and 3 ki was 4 and now 2 ki is 1 so maxfreq(var) ko 5 se 4 jaane ke liye pura map search krna pdega; that might take O(n) time, so no use!
+so what if i go like in map i store the interger(number) and with that i store heap formatted values? so usime -/+ of freq to be done and accordingly vo upar niche hojayega abut bcs pura heap nhi h to value to upar niche hojayegi but key nhi hogi hence wrog data we will have.
+
+what if we just have heap? with pair (freq,id) and freq base pe heap(max) sort hoga and calcution bhi accordingly usme perform krdenge and uske baad vo apne aap sort bhi hojayega, right? But searching for updation of a number -> O(n)
+
+hence take hybrid->
+Map for the storing of key->value --> id->freq(updated with oprn) ---> O(1)
+Heap just the freq to store one by one and answer daalne se pehle we will just check whtvr we give answer as with the map to check if that's a stale value or updated one only! to ye match krne ke liye heap me id bhi save krni pdegi, taht's fine heap -> (freq,id) and with id we will h=just get in map to check if it's stale or not.
+If stale then del it and take next top element and add teh uodated one too then check again for that top element. dont blindly just choose it. u need to check it too!
+
+
+class Solution {
+public:
+   
+    typedef long long ll;
+    
+    vector<long long> mostFrequentIDs(vector<int>& nums, vector<int>& freq) {
+        unordered_map<ll,ll> mp; //<id,freq>
+        priority_queue<pair<ll,ll>> pq; //(freq,number)
+
+        int n = nums.size();
+        vector<ll> result(n);
+
+
+        //sbko daaldo map me or kya
+        for (int i = 0; i < n; i++) { //n
+            
+            mp[nums[i]] += freq[i];
+
+          
+            pq.push({mp[nums[i]], nums[i]});//logn
+
+            
+            while (!pq.empty() && pq.top().first != mp[pq.top().second]) { //n
+                pq.pop(); //logn
+            }
+
+            // 4. The top is now guaranteed to be the current max
+            result[i] = pq.empty() ? 0 : pq.top().first;
+        }
+        return result;
+    }
+};
+
+//O(n) -> space complexity
+//n*(logn + n*logn) => n^2logn -> TC
