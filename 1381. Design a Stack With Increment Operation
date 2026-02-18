@@ -1,0 +1,41 @@
+class CustomStack {
+public:
+
+    vector<int> st;
+    vector<int> inc;
+    int top_idx=-1;
+    int n;
+    CustomStack(int maxSize) {
+        n= maxSize;
+        st.resize(maxSize);
+        inc.assign(maxSize,0);
+    }
+    
+    void push(int x) {
+        if(top_idx+1 <n){
+            top_idx++;
+            st[top_idx]=x;
+        }
+    }
+    
+    int pop() {
+        if(top_idx == -1) return -1;
+
+        int value = st[top_idx]+inc[top_idx];
+        
+        if(top_idx > 0){
+            inc[top_idx-1] += inc[top_idx];
+        }
+
+        inc[top_idx]=0;
+        top_idx--;
+        return value;
+         
+    }
+    
+    void increment(int k, int val) {
+        int idx = min(k - 1, top_idx);
+        if(idx>=0) inc[idx] += val;
+    }
+};
+
