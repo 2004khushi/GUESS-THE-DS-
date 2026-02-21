@@ -1,0 +1,99 @@
+Array of both but obv time very much lelenge so 
+let's keep num2 wala in map bcs 10^6 h uska to uspe iterate krna is more costly then in nums1 bcs 1000 hi h uska.
+ab aage ka to smjh hi gye aap kese niklta hai!
+O(n)-> n = 1000 max!
+
+
+
+baaki isko or optimise krskte h if nums1 me kam unique hue to use bhi map me daalke answer kam time me laaskte h , repetiotion less hojayega so it will be O(U)-> unique elements of num1;
+but agar unique saare hi hogye to fir to bhaiya uprwaale se bhi jyada time lgjaayega bcs of iteration!
+
+
+class FindSumPairs {
+public:
+    vector<int>vec1;
+    vector<int>vec2;
+    unordered_map<int,int>mp;
+
+    FindSumPairs(vector<int>& nums1, vector<int>& nums2) {
+        vec1=nums1;
+        vec2=nums2;
+        for(int &x: nums2){
+            mp[x]++;
+        }
+    }
+    
+    void add(int index, int val) {
+        int old_val = vec2[index];
+
+        vec2[index]+=val;
+        int curr = vec2[index];
+
+        mp[old_val]--;
+        mp[curr]++;
+    }
+    
+    int count(int tot) {
+        int result=0;
+
+        for(int x: vec1){
+            int need_val = tot-x;
+            if(mp.count(need_val)){
+                result+=mp[need_val];
+            }
+        }
+
+        return result;
+    }
+};
+
+
+
+
+
+
+
+
+
+
+class FindSumPairs {
+public:
+    
+    vector<int>vec2;
+    unordered_map<int,int>mp1;
+    unordered_map<int,int>mp2;
+
+    FindSumPairs(vector<int>& nums1, vector<int>& nums2) {
+       
+        vec2=nums2;
+        for(int &x: nums2){
+            mp2[x]++;
+        }
+        for(int &x: nums1){
+            mp1[x]++;
+        }
+    }
+    
+    void add(int index, int val) {
+        int old_val = vec2[index];
+
+        vec2[index]+=val;
+        int curr = vec2[index];
+
+        mp2[old_val]--;
+        mp2[curr]++;
+    }
+    
+    int count(int tot) {
+        int result=0;
+
+        for(auto const& [val1,freq1] :mp1){
+            int target = tot-val1;
+            if(mp2.count(target)){
+                result += (freq1*mp2[target]);
+            }
+        }
+
+        return result;
+    }
+};
