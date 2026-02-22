@@ -1,0 +1,56 @@
+class TaskManager {
+public:
+    typedef pair<int,int>P;
+
+    priority_queue<P> pt_pq; //priority,taskId
+    unordered_map<int,int> tp_mp; //task->priority
+    unordered_map<int,int> tu_mp; //taskId->userId
+    TaskManager(vector<vector<int>>& tasks) {
+        for(auto &it: tasks){
+            add(it[0],it[1],it[2]);
+        }
+    }
+    
+    void add(int userId, int taskId, int priority) {
+        tp_mp[taskId] = priority;
+        tu_mp[taskId]=userId;
+        pt_pq.push({priority,taskId});
+    }
+    
+    void edit(int taskId, int newPriority) {
+        //u just push the new one , and not do O(n) to find existing one to remove it; and just mutate in the mp!
+        //basically when we will send the o/p we will check within the pq but also with the mp so we dont send the stale output!
+        pt_pq.push({newPriority, taskId});
+        tp_mp[taskId] = newPriority;
+    }
+    
+    void rmv(int taskId) {
+        //rather then removing we gonna put it's lowest priority so it's never chosen with the stale data!
+        tp_mp[taskId] = -1;
+    }
+    
+    int execTop() {
+        while(!pt_pq.empty()){
+            auto [prio, tid] = pt_pq.top();
+
+            pt_pq.pop();
+
+
+            if(prio==tp_mp[tid]){
+                tp_mp[tid] = -1;
+                return tu_mp[tid];
+            }
+        }  
+
+        return -1;
+    }
+};
+
+/**
+ * Your TaskManager object will be instantiated and called as such:
+ * TaskManager* obj = new TaskManager(tasks);
+ * obj->add(userId,taskId,priority);
+ * obj->edit(taskId,newPriority);
+ * obj->rmv(taskId);
+ * int param_4 = obj->execTop();
+ */
