@@ -1,0 +1,48 @@
+class Spreadsheet {
+public:
+
+    vector<vector<int>> sheet;
+    Spreadsheet(int rows) {
+       sheet.assign(rows, vector<int>(26,0)); 
+    }
+    
+    void setCell(string cell, int value) {
+        int row = stoi(cell.substr(1))-1;
+        int col = cell[0]-'A';
+
+        sheet[row][col] = value;
+    }
+    
+    void resetCell(string cell) {
+        int row = stoi(cell.substr(1))-1;
+        int col = cell[0]-'A';
+
+        sheet[row][col] = 0;
+    }
+
+    int solve (string& s){
+        if(isdigit(s[0])){
+            return stoi(s);
+        }
+        int row = stoi(s.substr(1))-1;
+        int col = s[0]-'A';
+
+        int result = sheet[row][col];
+        return result;
+        
+    }
+    
+    int getValue(string formula) {
+        string rest = formula.substr(1);
+
+        //now we have "X+Y"
+        int plus = rest.find('+');
+        string before = rest.substr(0,plus);
+        string after = rest.substr(plus+1);
+
+        return solve(before)+solve(after);
+    }
+
+    
+};
+
