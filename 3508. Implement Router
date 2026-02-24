@@ -1,0 +1,71 @@
+class Router {
+public:
+
+    queue<string> que;
+    unordered_map<string,vector<int>> mp; //evtg
+    unordered_map<int,vector<int>> dt; //destination->timestamp
+    int max_size;
+
+    Router(int memoryLimit) {
+        max_size = memoryLimit;
+    }
+
+    string makeString(int a, int b, int c){
+        string result = to_string(a)+'_'+to_string(b)+'_'+to_string(c);
+        return result;
+    }
+    
+    bool addPacket(int source, int destination, int timestamp) {
+        string s = makeString(source, destination, timestamp);
+        if(mp.find(s)!=mp.end()){
+            return false;
+        }
+
+        if(que.size()>=max_size){
+            forwardPacket();
+        }
+
+        mp[s] = {source, destination, timestamp};
+        que.push(s);
+        dt[destination].push_back(timestamp);
+        return true;
+    }
+    
+    vector<int> forwardPacket() {
+        if(mp.empty()){
+            return {};
+        }
+        //hume fifo krna hai so 
+        string remove = que.front();
+        que.pop();
+        
+        
+        vector<int> packet = mp[remove];
+        mp.erase(remove);
+
+        int D = packet[1];
+        int T = packet[2];
+        dt[D].erase(dt[D].begin()); //begin wala hi vo wala time hoga, bcs dekho hum fifo krke hataare haina normally so obv si baat h ki vo dt map me bhi pehle hi enter hua hoga ! isliye use find krne ki jrurrat nhi h!
+
+        return packet;
+    }
+    
+    int getCount(int destination, int startTime, int endTime) {
+        //ab dekho bcs fifo chlra sb kuch to apne dt me bhi sorted order me hi actually timestamps store hore h! so ekbaar bas apanko start and end time ka pata lagana koi efficient search se and unke index ka minus krdo to answer miljayega ki kitne h us particular destination dt map me.
+        // so efficient search in sorted is obv BINARY-> use lowerbound and upperbound simple!
+
+        auto it = dt.find(destination);
+
+        if(it == dt.end() || it->second.empty()){
+            return 0;
+        }
+
+        vector<int> &timestamps = it->second;
+        int i = lower_bound(begin(timestamps), end(timestamps), startTime )- begin(timestamps);  //-begin(timestamps) to get index of it!
+
+        int j = upper_bound(begin(timestamps), end(timestamps), endTime) - begin(timestamps);
+
+        return j-i;
+    }
+};
+
