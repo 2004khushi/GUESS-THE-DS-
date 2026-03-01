@@ -1,0 +1,53 @@
+class Bank {
+public:
+    vector<long long> balance;
+    int n;
+    Bank(vector<long long>& bal) {
+        balance = bal;
+        n = bal.size();
+    }
+
+    bool check(int acc){
+        return (acc >= 1 && acc <= n);
+    }
+    
+    bool transfer(int acc1, int acc2, long long money) {
+
+        if(!check(acc1) || !check(acc2)) return false;
+
+        auto money1 = balance[acc1-1];
+        auto money2 = balance[acc2-1];
+
+        if(money1>=money ){
+            balance[acc2-1]+=money;
+            balance[acc1-1]-=money;
+            return true;
+        }
+
+        return false;
+    }
+    
+    bool deposit(int acc, long long money) {
+        int idx = acc-1;
+        if(check(acc)){
+            balance[idx]+=money;
+            return true;
+        }
+        return false;
+    }
+    
+    bool withdraw(int acc, long long money) {
+
+        if(!check(acc)) return false;
+
+        auto money1 = balance[acc-1];
+
+        if(money1>=money){
+            balance[acc-1]-=money;
+            return true;
+        }
+
+        return false;
+    }
+};
+
